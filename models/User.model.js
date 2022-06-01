@@ -22,11 +22,12 @@ const userSchema = new Schema({
   cohort: { type: String },
   cohortType: {
     type: String,
-    enum: ["In person", "Remote"],
+    enum: ["","In person", "Remote"],
   },
   campus: {
     type: String,
     enum: [
+      "",
       "Lisbon",
       "Berlin",
       "London",

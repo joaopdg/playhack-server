@@ -19,7 +19,7 @@ const gameSchema = new Schema(
       default: "linklinklinklink.link",
     },
     category: {
-      type: String,
+      type: [String],
       required: true,
       enum: [
         "Action",
