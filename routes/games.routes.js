@@ -10,37 +10,46 @@ router.post(
   "/game-submit/:userId",
   isAuthenticated,
   fileUploader.single("thumbnail"),
-  (req, res, next) => {
-    const { title, gameUrl, description, thumbnail, category } = req.body;
-    const { userId } = req.params;
+  async (req, res, next) => {
+    try {
+      const { title, gameUrl, description, thumbnail, category } = req.body;
+      const { userId } = req.params;
+      let createdGame;
 
-    if (req.file) {
-      Game.create({
-        title,
-        gameUrl,
-        description,
-        thumbnail: req.file.path,
-        category,
-        user: userId,
-        comments: [],
-        timesPlayed: 0,
-        likes: 0,
-      })
-        .then((response) => res.json(response))
-        .catch((err) => res.json(err));
-    } else {
-      Game.create({
-        title,
-        gameUrl,
-        description,
-        category,
-        user: userId,
-        comments: [],
-        timesPlayed: 0,
-        likes: 0,
-      })
-        .then((response) => res.json(response))
-        .catch((err) => res.json(err));
+      if (req.file) {
+        createdGame = await Game.create({
+          title,
+          gameUrl,
+          description,
+          thumbnail: req.file.path,
+          category,
+          user: userId,
+          comments: [],
+          timesPlayed: 0,
+          likes: 0,
+        });
+      } else {
+        createdGame = await Game.create({
+          title,
+          gameUrl,
+          description,
+          category,
+          user: userId,
+          comments: [],
+          timesPlayed: 0,
+          likes: 0,
+        });
+      }
+
+      const savedGame = await createdGame.save();
+
+      const gameCreator = await User.findById(userId);
+
+      await gameCreator.games.push(createdGame);
+      await gameCreator.save();
+      res.json(savedGame);
+    } catch (error) {
+      res.json(error);
     }
   }
 );
@@ -65,36 +74,56 @@ router.put(
   "/game/:gameId",
   isAuthenticated,
   fileUploader.single("thumbnail"),
-  (req, res, next) => {
-    const { gameId } = req.params;
-    const { title, gameUrl, description, thumbnail, category } = req.body;
+  async (req, res, next) => {
+    try {
+      const { gameId } = req.params;
+      const { title, gameUrl, description, thumbnail, category } = req.body;
+      const currentUser = req.payload._id;
+      let updatedGame;
 
-    if (req.file) {
-      Game.findByIdAndUpdate(
-        gameId,
-        { title, gameUrl, description, thumbnail: req.file.path, category },
-        { new: true }
-      )
-        .then((response) => res.json(response))
-        .catch((err) => res.json(err));
-    } else {
-      Game.findByIdAndUpdate(
-        gameId,
-        { title, gameUrl, description, category },
-        { new: true }
-      )
-        .then((response) => res.json(response))
-        .catch((err) => res.json(err));
+      const thisGame = await Game.findById(gameId);
+
+      if (thisGame.user != currentUser) {
+        throw new Error("This content doesn't belong to you");
+      } else {
+        if (req.file) {
+          updatedGame = await Game.findByIdAndUpdate(
+            gameId,
+            { title, gameUrl, description, thumbnail: req.file.path, category },
+            { new: true }
+          );
+        } else {
+          updatedGame = await Game.findByIdAndUpdate(
+            gameId,
+            { title, gameUrl, description, category },
+            { new: true }
+          );
+        }
+        res.json(updatedGame);
+      }
+    } catch (error) {
+      res.json(error);
     }
   }
 );
 
-router.delete("/game/:gameId", isAuthenticated, (req, res, next) => {
-  const { gameId } = req.params;
+router.delete("/game/:gameId", isAuthenticated, async (req, res, next) => {
+  try {
+    const { gameId } = req.params;
+    const currentUser = req.payload._id;
 
-  Game.findByIdAndRemove(gameId)
-    .then((response) => res.json(response))
-    .catch((err) => res.json(err));
+    const thisGame = await Game.findById(gameId);
+
+    if (thisGame.user != currentUser) {
+      throw new Error("This content doesn't belong to you");
+    } else {
+      const deletedGame = await Game.findByIdAndRemove(gameId);
+
+      res.json(deletedGame);
+    }
+  } catch (error) {
+    res.json(error);
+  }
 });
 
 module.exports = router;
