@@ -138,15 +138,15 @@ router.post("/login", (req, res, next) => {
       next(err);
       // return res.status(500).render("login", { errorMessage: err.message });
     });
-});
 
-router.get("/logout", (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).json({ errorMessage: err.message });
-    }
-    res.json({ message: "Done" });
-  });
-});
+   
+}
+
+
+
+
+
+);
+
 
 module.exports = router;
