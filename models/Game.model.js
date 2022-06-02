@@ -32,7 +32,7 @@ const gameSchema = new Schema(
         "Other",
       ],
     },
-    creator: { type: Schema.Types.ObjectId, ref: "User" },
+    user: { type: Schema.Types.ObjectId, ref: "User" },
     comments: [{ type: Schema.Types.ObjectId, ref: "Comments" }],
     timesPlayed: { type: Number },
     likes: { type: Number },
