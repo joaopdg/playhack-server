@@ -1,13 +1,14 @@
 const router = require("express").Router();
-const res = require("express/lib/response");
 const fileUploader = require("../config/cloudinary.config");
+const { isAuthenticated } = require("../middleware/jwt.middleware");
 const User = require("../models/User.model");
 const Game = require("../models/Game.model");
 const Comment = require("../models/Comment.model");
-const fileUploader = require("../config/cloudinary.config");
+const mongoose = require("mongoose");
 
 router.post(
-  "/games/:userId",
+  "/game-submit/:userId",
+  isAuthenticated,
   fileUploader.single("thumbnail"),
   (req, res, next) => {
     const { title, gameUrl, description, thumbnail, category } = req.body;
@@ -20,7 +21,7 @@ router.post(
         description,
         thumbnail: req.file.path,
         category,
-        creator: userId,
+        user: userId,
         comments: [],
         timesPlayed: 0,
         likes: 0,
@@ -33,7 +34,7 @@ router.post(
         gameUrl,
         description,
         category,
-        creator: userId,
+        user: userId,
         comments: [],
         timesPlayed: 0,
         likes: 0,
@@ -50,18 +51,19 @@ router.get("/games", (req, res, next) => {
     .catch((err) => res.json(err));
 });
 
-router.get("/games/:gameId", (req, res, next) => {
+router.get("/game/:gameId", (req, res, next) => {
   const { gameId } = req.params;
 
   Game.findById(gameId)
+    .populate("user")
     .populate("comments")
-    .populate("creator")
     .then((thisGame) => res.json(thisGame))
     .catch((err) => res.json(err));
 });
 
 router.put(
-  "/games/:gameId",
+  "/game/:gameId",
+  isAuthenticated,
   fileUploader.single("thumbnail"),
   (req, res, next) => {
     const { gameId } = req.params;
@@ -87,7 +89,7 @@ router.put(
   }
 );
 
-router.delete("/games/:gameId", (req, res, next) => {
+router.delete("/game/:gameId", isAuthenticated, (req, res, next) => {
   const { gameId } = req.params;
 
   Game.findByIdAndRemove(gameId)
