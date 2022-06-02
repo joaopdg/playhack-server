@@ -37,7 +37,7 @@ router.put("/user/:userId", isAuthenticated, async (req, res, next) => {
       req.body;
 
     if (userId != currentUser) {
-      throw new Error("You are not allowed to edit this content");
+      throw { errorMessage: "This content doesn't belong to you" };
     } else {
       const updatedUser = await User.findByIdAndUpdate(
         userId,
@@ -52,33 +52,70 @@ router.put("/user/:userId", isAuthenticated, async (req, res, next) => {
 });
 
 router.delete("/user/:userId", isAuthenticated, async (req, res, next) => {
-
-    try {
+  try {
     const { userId } = req.params;
-    
+
     const thisUser = await User.findById(userId);
-    
-    await thisUser.populate("games");
-    
-    const userGames = await thisUser.games;
-    
-    await userGames.forEach((game) => {
-      game.comments.forEach((comment) => Comment.findByIdAndRemove(comment));
-    
-      if (game.comments.length === 0) {
-        Game.findByIdAndRemove(game);
-      }
+    const userToDeleteComment = await User.findById(userId).populate("games");
+
+    const gamesToDeleteComments = await userToDeleteComment.games;
+
+    for (let i = 0; i < gamesToDeleteComments.length; i++) {
+      await Comment.findByIdAndDelete(gamesToDeleteComments[i].comments);
+    }
+
+    const games = await thisUser.games;
+
+    for (let i = 0; i < games.length; i++) {
+      await Game.findByIdAndRemove(games[i]);
+    }
+
+    const deleteUser = await User.findByIdAndRemove(userId);
+
+  
+    res.status(200).json(deleteUser);
+  } catch (error) {
+    res.json(error);
+  }
+});
+
+router.get("/test/:userId", async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+
+    //Current User
+    const thisUser = await User.findById(userId);
+    const userToDeleteComment = await User.findById(userId).populate("games");
+
+    const gamesToDeleteComments = await userToDeleteComment.games;
+
+    for (let i = 0; i < gamesToDeleteComments.length; i++) {
+      await Comment.findByIdAndDelete(gamesToDeleteComments[i].comments);
+    }
+    /* const commentToDelete = await gamesToDeleteComments.comments; */
+
+    // Array dos jogos do user
+    const games = await thisUser.games;
+
+    for (let i = 0; i < games.length; i++) {
+      await Game.findByIdAndRemove(games[i]);
+    }
+
+    // const deleteGames =
+    // Ids dos comentarios
+    /* const gamesComments = await games.map((game) => {
+      return game.comments;
     });
-    
-    await User.findByIdAndRemove(userId)
-      res.json(response)
-    
-} catch (error) {
-    res.json(error)
-}
 
+    const comments = await gamesComments.map((el) => {
+      return el;
+    }); */
 
-   
+    /* const deletedUser = await User.findByIdAndRemove(userId); */
+    res.status(200).json(deleteUser);
+  } catch (error) {
+    res.status(400).json(error);
+  }
 });
 
 module.exports = router;

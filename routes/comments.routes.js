@@ -47,7 +47,7 @@ try {
     Comment.findById(commentid)
       .then((comment) => {
         if (comment.user != req.payload._id) {
-            throw new Error("You're not the owner of this comment!")
+          throw ({errorMessage:"This content doesn't belong to you"});
         } else {
           Comment.findByIdAndRemove(commentid).then((comment) => {
             res.json(comment)
