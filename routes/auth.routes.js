@@ -63,6 +63,7 @@ router.post("/signup",(req, res) => {
           name,
           email,
           password: hashedPassword,
+          bio:"",
           cohort:"",
           cohortType:"",
           campus:"",
