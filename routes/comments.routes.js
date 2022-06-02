@@ -3,31 +3,61 @@ const mongoose = require("mongoose");
 const User = require("../models/User.model");
 const Game = require("../models/Game.model");
 const Comment = require("../models/Comment.model");
+const { isAuthenticated } = require("../middleware/jwt.middleware");
 
 
-router.post("/game/:gameId/comments", (req, res, next) => {
+router.post("/game/:gameId/comments", isAuthenticated, async (req, res, next) => {
     const { gameId } = req.params;
     const { content } = req.body;
 
-    Game.findById(gameId)
-    .populate('user')
-    .then((game) => {
-        let newComment = new Comment({
-            user: game.user._id,
-            game: game._id,
-            content
-        })
+try {
+    let game = await Game.findById(gameId)
 
-        newComment.save()
-        .then((savedComment) => {
-            game.comments.push(savedComment._id)
-        })
 
-        game.save()
-        .then((updateGame) => res.json(updateGame._id))
+    const newComment = await Comment.create({
+        user: req.payload._id,
+        game: game._id,
+        content
     })
+
+    const savedComment = await newComment.save()
+
+    const pushComment = await game.comments.push(savedComment)
+
+    const updateGame = await game.save()
+
+    res.json(updateGame)
+
+
+
+} catch (error) {
+    res.json(error)
+}
+
   
-    .catch((err) => res.json(err));
+
   });
+
+
+
+
+  router.delete("/game/:commentid", isAuthenticated, (req, res, next) => {
+    const { commentid } = req.params;
+  
+    Comment.findById(commentid)
+      .then((comment) => {
+        if (comment.user != req.payload._id) {
+            throw new Error("You're not the owner of this comment!")
+        } else {
+          Comment.findByIdAndRemove(commentid).then((comment) => {
+            res.json(comment)
+          });
+        }
+      })
+      .catch((err) => next(err));
+  });
+
+
+
 
   module.exports = router;
