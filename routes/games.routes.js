@@ -128,4 +128,37 @@ router.delete("/game/:gameId", isAuthenticated, async (req, res, next) => {
   }
 });
 
+
+
+router.put("/game/:gameId/like", isAuthenticated, async (req, res, next) => {
+  try {
+    const { gameId } = req.params;
+    const currentUser = req.payload._id;
+
+    const thisUser = await User.findByIdAndUpdate(currentUser, { $push: { likedGames: gameId } })
+
+    res.json(thisUser)
+
+  } catch (error) {
+    res.json(error);
+  }
+});
+
+router.put("/game/:gameId/dislike", isAuthenticated, async (req, res, next) => {
+  try {
+    const { gameId } = req.params;
+    const currentUser = req.payload._id;
+
+    const thisUser = await User.findByIdAndUpdate(currentUser, { $pull: { likedGames: gameId } })
+
+    res.json(thisUser)
+
+  } catch (error) {
+    res.json(error);
+  }
+});
+
+
+
+
 module.exports = router;

@@ -20,7 +20,10 @@ router.get("/user/:userId", async (req, res, next) => {
       bio: user.bio,
       cohort: user.cohort,
       cohortType: user.cohortType,
+      campus: user.campus,
       imageUrl: user.imageUrl,
+      likedGames: user.likedGames,
+      games: user.games
     };
 
     res.status(200).json(userInfo);
