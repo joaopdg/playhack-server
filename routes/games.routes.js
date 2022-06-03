@@ -84,7 +84,7 @@ router.put(
       const thisGame = await Game.findById(gameId);
 
       if (thisGame.user != currentUser) {
-        throw ({errorMessage:"This content doesn't belong to you"});
+        throw { errorMessage: "This content doesn't belong to you" };
       } else {
         if (req.file) {
           updatedGame = await Game.findByIdAndUpdate(
@@ -113,16 +113,11 @@ router.delete("/game/:gameId", isAuthenticated, async (req, res, next) => {
     const currentUser = req.payload._id;
 
     const thisGame = await Game.findById(gameId);
-    
 
     if (thisGame.user != currentUser) {
-      throw ({errorMessage:"This content doesn't belong to you"});
+      throw { errorMessage: "This content doesn't belong to you" };
     } else {
-    
-      await User.findByIdAndUpdate(currentUser,{$pull:{games:gameId}});
-
-
-
+      await User.findByIdAndUpdate(currentUser, { $pull: { games: gameId } });
 
       const deletedGame = await Game.findByIdAndRemove(gameId);
 
