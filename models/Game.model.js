@@ -37,7 +37,7 @@ const gameSchema = new Schema(
     timesPlayed: { type: Number },
     likes: { type: Number },
   },
-  { timestampes: true }
+  { timestamps: true }
 );
 
 const Game = model("Game", gameSchema);

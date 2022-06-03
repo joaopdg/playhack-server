@@ -12,7 +12,7 @@ router.post(
   fileUploader.single("thumbnail"),
   async (req, res, next) => {
     try {
-      const { title, gameUrl, description, thumbnail, category } = req.body;
+      const { title, gameUrl, description, category } = req.body;
       const { userId } = req.params;
       let createdGame;
 

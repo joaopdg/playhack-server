@@ -32,11 +32,11 @@ router.get("/user/:userId", async (req, res, next) => {
   }
 });
 
-router.put("/user/:userId", isAuthenticated, async (req, res, next) => {
+router.put("/user/:userId", isAuthenticated, fileUploader.single('imageUrl'), async (req, res, next) => {
   try {
     const { userId } = req.params;
     const currentUser = req.payload._id;
-    const { name, email, password, cohort, cohortType, imageUrl, bio } =
+    const { name, email, password, cohort, cohortType, bio, campus } =
       req.body;
 
     if (userId != currentUser) {
@@ -44,7 +44,7 @@ router.put("/user/:userId", isAuthenticated, async (req, res, next) => {
     } else {
       const updatedUser = await User.findByIdAndUpdate(
         userId,
-        { name, email, password, bio, cohort, cohortType, imageUrl },
+        { name, email, password, bio, cohort, campus, cohortType, imageUrl: req.file.path },
         { new: true }
       );
       res.status(200).json(updatedUser);
