@@ -23,7 +23,7 @@ router.get("/user/:userId", async (req, res, next) => {
       campus: user.campus,
       imageUrl: user.imageUrl,
       likedGames: user.likedGames,
-      games: user.games
+      games: user.games,
     };
 
     res.status(200).json(userInfo);
@@ -32,27 +32,58 @@ router.get("/user/:userId", async (req, res, next) => {
   }
 });
 
-router.put("/user/:userId", isAuthenticated, fileUploader.single('imageUrl'), async (req, res, next) => {
-  try {
-    const { userId } = req.params;
-    const currentUser = req.payload._id;
-    const { name, email, password, cohort, cohortType, bio, campus } =
-      req.body;
+router.put(
+  "/user/:userId",
+  isAuthenticated,
+  fileUploader.single("imageUrl"),
+  async (req, res, next) => {
+    try {
+      const { userId } = req.params;
+      const currentUser = req.payload._id;
+      const { name, email, password, cohort, cohortType, bio, campus } =
+        req.body;
 
-    if (userId != currentUser) {
-      throw { errorMessage: "This content doesn't belong to you" };
-    } else {
-      const updatedUser = await User.findByIdAndUpdate(
-        userId,
-        { name, email, password, bio, cohort, campus, cohortType, imageUrl: req.file.path },
-        { new: true }
-      );
-      res.status(200).json(updatedUser);
+      if (userId != currentUser) {
+        throw { errorMessage: "This content doesn't belong to you" };
+      } else {
+        if (req.file) {
+          const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            {
+              name,
+              email,
+              password,
+              bio,
+              cohort,
+              campus,
+              cohortType,
+              imageUrl: req.file.path,
+            },
+            { new: true }
+          );
+        } else {
+          const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            {
+              name,
+              email,
+              password,
+              bio,
+              cohort,
+              campus,
+              cohortType /* , imageUrl: req.file.path  */,
+            },
+            { new: true }
+          );
+        }
+
+        res.status(200).json(updatedUser);
+      }
+    } catch (error) {
+      res.json(error);
     }
-  } catch (error) {
-    res.json(error);
   }
-});
+);
 
 router.delete("/user/:userId", isAuthenticated, async (req, res, next) => {
   try {
@@ -75,7 +106,6 @@ router.delete("/user/:userId", isAuthenticated, async (req, res, next) => {
 
     const deleteUser = await User.findByIdAndRemove(userId);
 
-  
     res.status(200).json(deleteUser);
   } catch (error) {
     res.json(error);
