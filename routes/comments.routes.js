@@ -5,6 +5,21 @@ const Game = require("../models/Game.model");
 const Comment = require("../models/Comment.model");
 const { isAuthenticated } = require("../middleware/jwt.middleware");
 
+
+router.get("/game/:gameId/comments", (req, res, next) => {
+  const { gameId } = req.params;
+
+
+  Comment.find({game:gameId})
+    .populate("user")
+    .then((allComments) => {
+    
+
+      res.json(allComments)})
+    .catch((err) => res.json(err));
+});
+
+
 router.post(
   "/game/:gameId/comments",
   isAuthenticated,
