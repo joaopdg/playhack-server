@@ -6,42 +6,32 @@ const Game = require("../models/Game.model");
 const Comment = require("../models/Comment.model");
 const mongoose = require("mongoose");
 
+
 router.post(
   "/game-submit/:userId",
   isAuthenticated,
-  fileUploader.single("thumbnail"),
   async (req, res, next) => {
     console.log(req.body);
     try {
-      const { title, gameUrl, description, category } = req.body;
+      const { title, gameUrl, description, category, imageUrl } = req.body;
       const { userId } = req.params;
-      let createdGame;
 
-      if (req.file) {
-        createdGame = await Game.create({
+      let image 
+
+      if(!imageUrl) image="https://i.ibb.co/DVCmg1k/download-2.jpg"
+      else image=imageUrl
+      let createdGame = await Game.create({
           title,
           gameUrl,
           description,
-          thumbnail: req.file.path,
+          imageUrl:image,
           category,
           user: userId,
           comments: [],
           timesPlayed: 0,
           likes: 0,
         });
-      } else {
-        createdGame = await Game.create({
-          title,
-          gameUrl,
-          description,
-          category,
-          user: userId,
-          comments: [],
-          timesPlayed: 0,
-          likes: 0,
-        });
-      }
-
+   
       const savedGame = await createdGame.save();
 
       const gameCreator = await User.findById(userId);
@@ -93,7 +83,7 @@ router.put(
         if (req.file) {
           updatedGame = await Game.findByIdAndUpdate(
             gameId,
-            { title, gameUrl, description, thumbnail: req.file.path, category },
+            { title, gameUrl, description, imageUrl, category },
             { new: true }
           );
         } else {

@@ -14,7 +14,7 @@ const gameSchema = new Schema(
       type: String,
       required: true,
     },
-    thumbnail: {
+    imageUrl: {
       type: String,
       default: "https://i.ibb.co/DVCmg1k/download-2.jpg",
     },
