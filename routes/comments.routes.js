@@ -5,20 +5,16 @@ const Game = require("../models/Game.model");
 const Comment = require("../models/Comment.model");
 const { isAuthenticated } = require("../middleware/jwt.middleware");
 
-
 router.get("/game/:gameId/comments", (req, res, next) => {
   const { gameId } = req.params;
 
-
-  Comment.find({game:gameId})
+  Comment.find({ game: gameId })
     .populate("user")
     .then((allComments) => {
-    
-
-      res.json(allComments)})
+      res.json(allComments);
+    })
     .catch((err) => res.json(err));
 });
-
 
 router.post(
   "/game/:gameId/comments",
@@ -49,29 +45,33 @@ router.post(
   }
 );
 
-router.delete("/comment/:commentId", isAuthenticated, async (req, res, next) => {
-  try {
-    const { commentId } = req.params;
-    const currentUser = req.payload._id;
+router.delete(
+  "/comment/:commentId",
+  isAuthenticated,
+  async (req, res, next) => {
+    try {
+      const { commentId } = req.params;
+      const currentUser = req.payload._id;
 
-    const thisComment = await Comment.findById(commentId);
+      const thisComment = await Comment.findById(commentId);
 
-    const thisGameId = await thisComment.game;
+      const thisGameId = await thisComment.game;
 
-    if (thisComment.user != currentUser) {
-      throw { errorMessage: "This content doesn't belong to you" };
-    } else {
-      await Game.findByIdAndUpdate(thisGameId, {
-        $pull: { comments: commentId },
-      });
+      if (thisComment.user != currentUser) {
+        throw { errorMessage: "This content doesn't belong to you" };
+      } else {
+        await Game.findByIdAndUpdate(thisGameId, {
+          $pull: { comments: commentId },
+        });
 
-      const deletedComment = await Comment.findByIdAndRemove(commentId);
+        const deletedComment = await Comment.findByIdAndRemove(commentId);
 
-      res.status(200).json(deletedComment);
+        res.status(200).json(deletedComment);
+      }
+    } catch (error) {
+      res.json(error);
     }
-  } catch (error) {
-    res.json(error);
   }
-});
+);
 
 module.exports = router;
