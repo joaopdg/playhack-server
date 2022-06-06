@@ -11,6 +11,7 @@ router.post(
   isAuthenticated,
   fileUploader.single("thumbnail"),
   async (req, res, next) => {
+    console.log(req.body);
     try {
       const { title, gameUrl, description, category } = req.body;
       const { userId } = req.params;
@@ -56,7 +57,10 @@ router.post(
 
 router.get("/games", (req, res, next) => {
   Game.find({})
-    .then((allGames) => res.json(allGames))
+  .populate("user")
+    .then((allGames) => {
+      console.log(allGames)
+      res.json(allGames)})
     .catch((err) => res.json(err));
 });
 
