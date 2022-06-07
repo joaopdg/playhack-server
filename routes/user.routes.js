@@ -1,10 +1,13 @@
 const router = require("express").Router();
 const fileUploader = require("../config/cloudinary.config");
+const jwt = require("jsonwebtoken");
 const { isAuthenticated } = require("../middleware/jwt.middleware");
 const User = require("../models/User.model");
 const Game = require("../models/Game.model");
 const Comment = require("../models/Comment.model");
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 
 router.get("/user/:userId", async (req, res, next) => {
   try {
@@ -40,42 +43,34 @@ router.put(
     try {
       const { userId } = req.params;
       const currentUser = req.payload._id;
-      const { name, email, password, cohort, cohortType, bio, campus } =
+      const { name, email, password, cohort, cohortType, bio, campus, imageUrl } =
         req.body;
 
       if (userId != currentUser) {
         throw { errorMessage: "This content doesn't belong to you" };
       } else {
-        if (req.file) {
+        
+        const salt = await bcrypt.genSalt(saltRounds)
+        const hashedPassword =  await  bcrypt.hash(password, salt)
+
+        let image 
+        if(!imageUrl) image="https://i.ibb.co/DVCmg1k/download-2.jpg"
+
           const updatedUser = await User.findByIdAndUpdate(
             userId,
             {
               name,
               email,
-              password,
+              password: hashedPassword,
               bio,
               cohort,
               campus,
               cohortType,
-              imageUrl: req.file.path,
+              imageUrl:image,
             },
             { new: true }
           );
-        } else {
-          const updatedUser = await User.findByIdAndUpdate(
-            userId,
-            {
-              name,
-              email,
-              password,
-              bio,
-              cohort,
-              campus,
-              cohortType /* , imageUrl: req.file.path  */,
-            },
-            { new: true }
-          );
-        }
+
 
         res.status(200).json(updatedUser);
       }

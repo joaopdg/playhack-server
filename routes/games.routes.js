@@ -11,14 +11,13 @@ router.post(
   "/game-submit/:userId",
   isAuthenticated,
   async (req, res, next) => {
-    console.log(req.body);
     try {
       const { title, gameUrl, description, category, imageUrl } = req.body;
       const { userId } = req.params;
 
       let image 
-
       if(!imageUrl) image="https://i.ibb.co/DVCmg1k/download-2.jpg"
+
       else image=imageUrl
       let createdGame = await Game.create({
           title,
@@ -67,32 +66,28 @@ router.get("/game/:gameId", (req, res, next) => {
 router.put(
   "/game/:gameId",
   isAuthenticated,
-  fileUploader.single("thumbnail"),
   async (req, res, next) => {
     try {
       const { gameId } = req.params;
-      const { title, gameUrl, description, thumbnail, category } = req.body;
+      const { title, gameUrl, description, imageUrl, category } = req.body;
       const currentUser = req.payload._id;
       let updatedGame;
 
       const thisGame = await Game.findById(gameId);
 
+      let image 
+      if(!imageUrl) image="https://i.ibb.co/DVCmg1k/download-2.jpg"
+
       if (thisGame.user != currentUser) {
         throw { errorMessage: "This content doesn't belong to you" };
       } else {
-        if (req.file) {
+
           updatedGame = await Game.findByIdAndUpdate(
             gameId,
-            { title, gameUrl, description, imageUrl, category },
+            { title, gameUrl, description, imageUrl:image, category },
             { new: true }
           );
-        } else {
-          updatedGame = await Game.findByIdAndUpdate(
-            gameId,
-            { title, gameUrl, description, category },
-            { new: true }
-          );
-        }
+     
         res.json(updatedGame);
       }
     } catch (error) {
