@@ -49,7 +49,7 @@ router.put(
       if (userId != currentUser) {
         throw { errorMessage: "This content doesn't belong to you" };
       } else {
-        
+
         const salt = await bcrypt.genSalt(saltRounds)
         const hashedPassword =  await  bcrypt.hash(password, salt)
 
@@ -66,7 +66,7 @@ router.put(
               cohort,
               campus,
               cohortType,
-              imageUrl:image,
+              imageUrl: image,
             },
             { new: true }
           );
