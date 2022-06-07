@@ -35,49 +35,40 @@ router.get("/user/:userId", async (req, res, next) => {
   }
 });
 
-router.put(
-  "/user/:userId",
-  isAuthenticated,
-  fileUploader.single("imageUrl"),
-  async (req, res, next) => {
-    try {
-      const { userId } = req.params;
-      const currentUser = req.payload._id;
-      const { name, email, password, cohort, cohortType, bio, campus, imageUrl } =
-        req.body;
+router.put("/user/:userId", isAuthenticated, async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const currentUser = req.payload._id;
+    const { name, email, password, cohort, cohortType, bio, campus, imageUrl } =
+      req.body;
 
-      if (userId != currentUser) {
-        throw { errorMessage: "This content doesn't belong to you" };
-      } else {
+    if (userId != currentUser) {
+      throw { errorMessage: "This content doesn't belong to you" };
+    } else {
+      const salt = await bcrypt.genSalt(saltRounds);
+      const hashedPassword = await bcrypt.hash(password, salt);
 
-        const salt = await bcrypt.genSalt(saltRounds)
-        const hashedPassword =  await  bcrypt.hash(password, salt)
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        {
+          name,
+          email,
+          password: hashedPassword,
+          bio,
+          cohort,
+          campus,
+          cohortType,
+          imageUrl,
+        },
+        { new: true }
+      );
 
-
-
-          const updatedUser = await User.findByIdAndUpdate(
-            userId,
-            {
-              name,
-              email,
-              password: hashedPassword,
-              bio,
-              cohort,
-              campus,
-              cohortType,
-              imageUrl,
-            },
-            { new: true }
-          );
-
-
-        res.status(200).json(updatedUser);
-      }
-    } catch (error) {
-      res.json(error);
+      res.status(200).json(updatedUser);
     }
+  } catch (error) {
+    res.json(error);
   }
-);
+});
 
 router.delete("/user/:userId", isAuthenticated, async (req, res, next) => {
   try {

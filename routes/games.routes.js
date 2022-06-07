@@ -28,7 +28,7 @@ router.post(
           user: userId,
           comments: [],
           timesPlayed: 0,
-          likes: 0,
+          likes: [],
         });
    
       const savedGame = await createdGame.save();
@@ -121,11 +121,16 @@ router.put("/game/:gameId/like", isAuthenticated, async (req, res, next) => {
     const { gameId } = req.params;
     const currentUser = req.payload._id;
 
+const checkUser= await User.findById(currentUser)
+if(checkUser.likedGames.includes(gameId)){
+  res.status(400).json({errorMessage:"You liked this game before"})
+  return
+ }
     const thisUser = await User.findByIdAndUpdate(currentUser, {
       $push: { likedGames: gameId },
     });
 
-     await Game.findByIdAndUpdate(gameId, {$inc: {'likes': +1}})
+     await Game.findByIdAndUpdate(gameId, {$push:{likes:currentUser}})
 
     res.json(thisUser);
   } catch (error) {
@@ -141,7 +146,7 @@ router.put("/game/:gameId/dislike", isAuthenticated, async (req, res, next) => {
     const thisUser = await User.findByIdAndUpdate(currentUser, {
       $pull: { likedGames: gameId },
     });
-     await Game.findByIdAndUpdate(gameId, {$inc: {'likes': -1}})
+     await Game.findByIdAndUpdate(gameId, {$pull:{likes:currentUser}})
     res.json(thisUser);
   } catch (error) {
     res.json(error);
