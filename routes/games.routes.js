@@ -126,6 +126,8 @@ router.put("/game/:gameId/like", isAuthenticated, async (req, res, next) => {
       $push: { likedGames: gameId },
     });
 
+    const thisGame = await Game.findByIdAndUpdate(gameId, {likes: {likes}+1})
+
     res.json(thisUser);
   } catch (error) {
     res.json(error);
@@ -140,7 +142,7 @@ router.put("/game/:gameId/dislike", isAuthenticated, async (req, res, next) => {
     const thisUser = await User.findByIdAndUpdate(currentUser, {
       $pull: { likedGames: gameId },
     });
-
+    const thisGame = await Game.findByIdAndUpdate(gameId, {likes: {likes}+1})
     res.json(thisUser);
   } catch (error) {
     res.json(error);
