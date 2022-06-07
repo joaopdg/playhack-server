@@ -75,8 +75,7 @@ router.put(
 
       const thisGame = await Game.findById(gameId);
 
-      let image 
-      if(!imageUrl) image="https://i.ibb.co/DVCmg1k/download-2.jpg"
+ 
 
       if (thisGame.user != currentUser) {
         throw { errorMessage: "This content doesn't belong to you" };
@@ -84,7 +83,7 @@ router.put(
 
           updatedGame = await Game.findByIdAndUpdate(
             gameId,
-            { title, gameUrl, description, imageUrl:image, category },
+            { title, gameUrl, description, imageUrl, category },
             { new: true }
           );
      
@@ -148,5 +147,11 @@ router.put("/game/:gameId/dislike", isAuthenticated, async (req, res, next) => {
     res.json(error);
   }
 });
+
+router.get('/categories/:gameId', (req, res, next) =>{
+  const { gameId } = req.params;
+  Game.findById(gameId)
+  .then((response) => res.json(response.category))
+})
 
 module.exports = router;

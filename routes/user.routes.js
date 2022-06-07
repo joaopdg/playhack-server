@@ -53,8 +53,7 @@ router.put(
         const salt = await bcrypt.genSalt(saltRounds)
         const hashedPassword =  await  bcrypt.hash(password, salt)
 
-        let image 
-        if(!imageUrl) image="https://i.ibb.co/DVCmg1k/download-2.jpg"
+
 
           const updatedUser = await User.findByIdAndUpdate(
             userId,
@@ -66,7 +65,7 @@ router.put(
               cohort,
               campus,
               cohortType,
-              imageUrl: image,
+              imageUrl,
             },
             { new: true }
           );
