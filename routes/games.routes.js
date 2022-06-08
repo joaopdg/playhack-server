@@ -56,10 +56,12 @@ router.get("/games", (req, res, next) => {
 router.get("/game/:gameId", (req, res, next) => {
   const { gameId } = req.params;
 
-  Game.findById(gameId)
+  Game.findByIdAndUpdate(gameId, {$inc: {"timesPlayed": +1}})
     .populate("user")
     .populate("comments")
-    .then((thisGame) => res.json(thisGame))
+    .then((thisGame) => {
+      res.json(thisGame)
+    })
     .catch((err) => res.json(err));
 });
 
