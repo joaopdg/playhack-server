@@ -10,22 +10,16 @@ const saltRounds = 10;
 // Require the User model in order to interact with the database
 const User = require("../models/User.model");
 
-
 router.get("/verify", isAuthenticated, (req, res, next) => {
   console.log(req.payload);
   res.status(200).json(req.payload);
 });
 
-
-
-
-router.post("/signup",(req, res) => {
+router.post("/signup", (req, res) => {
   const { name, email, password } = req.body;
 
   if (!email) {
-    return res
-      .status(400)
-      .json({ errorMessage: "Please provide your email." });
+    return res.status(400).json({ errorMessage: "Please provide your email." });
   }
 
   if (password.length < 8) {
@@ -33,7 +27,6 @@ router.post("/signup",(req, res) => {
       errorMessage: "Your password needs to be at least 8 characters long.",
     });
   }
-
 
   User.findOne({ email }).then((found) => {
     // If the user is found, send the message username is taken
@@ -51,16 +44,16 @@ router.post("/signup",(req, res) => {
           name,
           email,
           password: hashedPassword,
-          bio:"",
-          cohort:"",
-          cohortType:"",
-          campus:"",
-          likedGames:[],
-          games:[]
+          bio: "",
+          cohort: "",
+          linkedin: "",
+          github: "",
+          campus: "",
+          likedGames: [],
+          games: [],
         });
       })
       .then((user) => {
-
         res.status(201).json(user);
       })
       .catch((error) => {
@@ -82,9 +75,7 @@ router.post("/login", (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email) {
-    return res
-      .status(400)
-      .json({ errorMessage: "Please provide your email." });
+    return res.status(400).json({ errorMessage: "Please provide your email." });
   }
 
   // Here we use the same logic as above
@@ -116,8 +107,8 @@ router.post("/login", (req, res, next) => {
           algorithm: "HS256",
           expiresIn: "6h",
         });
-        
-        return res.status(200).json({ authToken })
+
+        return res.status(200).json({ authToken });
       });
     })
 
@@ -127,15 +118,6 @@ router.post("/login", (req, res, next) => {
       next(err);
       // return res.status(500).render("login", { errorMessage: err.message });
     });
-
-   
-}
-
-
-
-
-
-);
-
+});
 
 module.exports = router;
