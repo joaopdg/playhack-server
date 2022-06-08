@@ -22,7 +22,8 @@ router.get("/user/:userId", async (req, res, next) => {
       email: user.email,
       bio: user.bio,
       cohort: user.cohort,
-      cohortType: user.cohortType,
+      linkedin: user.linkedin,
+      github: user.github,
       campus: user.campus,
       imageUrl: user.imageUrl,
       likedGames: user.likedGames,
@@ -39,8 +40,17 @@ router.put("/user/:userId", isAuthenticated, async (req, res, next) => {
   try {
     const { userId } = req.params;
     const currentUser = req.payload._id;
-    const { name, email, password, cohort, cohortType, bio, campus, imageUrl } =
-      req.body;
+    const {
+      name,
+      email,
+      password,
+      cohort,
+      linkedin,
+      github,
+      bio,
+      campus,
+      imageUrl,
+    } = req.body;
 
     if (userId != currentUser) {
       throw { errorMessage: "This content doesn't belong to you" };
@@ -57,7 +67,8 @@ router.put("/user/:userId", isAuthenticated, async (req, res, next) => {
           bio,
           cohort,
           campus,
-          cohortType,
+          linkedin,
+          github,
           imageUrl,
         },
         { new: true }
