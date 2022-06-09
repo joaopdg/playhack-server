@@ -12,7 +12,7 @@ router.post("/game-submit/:userId", isAuthenticated, async (req, res, next) => {
     const { userId } = req.params;
 
     let image;
-    if (!imageUrl) image = "https://i.ibb.co/DVCmg1k/download-2.jpg";
+    if (!imageUrl) image = "https://res.cloudinary.com/dzwl5teme/image/upload/v1654780507/playHack/default_game_akeadj.jpg";
     else image = imageUrl;
     let createdGame = await Game.create({
       title,

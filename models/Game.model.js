@@ -16,7 +16,7 @@ const gameSchema = new Schema(
     },
     imageUrl: {
       type: String,
-      default: "https://i.ibb.co/DVCmg1k/download-2.jpg",
+      default: "https://res.cloudinary.com/dzwl5teme/image/upload/v1654780507/playHack/default_game_akeadj.jpg",
     },
     category: {
       type: [String],

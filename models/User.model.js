@@ -17,7 +17,7 @@ const userSchema = new Schema({
   imageUrl: {
     type: String,
     default:
-      "https://i.pinimg.com/736x/5c/a1/42/5ca142d34fd1903773b4f4e6f43d9045.jpg",
+      "https://res.cloudinary.com/dzwl5teme/image/upload/v1654780342/playHack/default_avatar_avgoiz.jpg",
   },
   bio: { type: String },
   cohort: { type: String },
