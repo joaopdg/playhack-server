@@ -6,8 +6,6 @@ const User = require("../models/User.model");
 const Game = require("../models/Game.model");
 const Comment = require("../models/Comment.model");
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
-const saltRounds = 10;
 
 router.get("/user/:userId", async (req, res, next) => {
   try {
@@ -40,30 +38,17 @@ router.put("/user/:userId", isAuthenticated, async (req, res, next) => {
   try {
     const { userId } = req.params;
     const currentUser = req.payload._id;
-    const {
-      name,
-      email,
-      password,
-      cohort,
-      linkedin,
-      github,
-      bio,
-      campus,
-      imageUrl,
-    } = req.body;
+    const { name, email, cohort, linkedin, github, bio, campus, imageUrl } =
+      req.body;
 
     if (userId != currentUser) {
       throw { errorMessage: "This content doesn't belong to you" };
     } else {
-      const salt = await bcrypt.genSalt(saltRounds);
-      const hashedPassword = await bcrypt.hash(password, salt);
-
       const updatedUser = await User.findByIdAndUpdate(
         userId,
         {
           name,
           email,
-          password: hashedPassword,
           bio,
           cohort,
           campus,
