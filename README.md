@@ -252,7 +252,8 @@ axios, react-router-dom, styled-components
 
 ### Trello/Kanban
 
-(https://trello.com/b/bxzbAEPg/project-3) 
+[Trello Board](https://trello.com/b/bxzbAEPg/project-3) 
+
 ### Git
 
 The url to your repository and to your deployed project
