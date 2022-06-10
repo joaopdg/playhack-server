@@ -257,15 +257,15 @@ axios, react-router-dom, styled-components
 
 The url to your repository and to your deployed project
 
-[Client repository Link](https://github.com/screeeen/project-client)- comming soon
+[Client repository Link](https://github.com/miloliveira/playhack-client)
 
-[Server repository Link](https://github.com/screeeen/project-server)- comming soon
+[Server repository Link](https://github.com/joaopdg/playhack-server)
 
-[Deployed App Link](http://heroku.com) -  comming soon
+[Deployed App Link](https://playhack.netlify.app/)
 
 ### Slides
 
-[Slides Link](http://slides.com) - comming soon
+[Slides Link](https://slides.com/joaog/bold) 
 
 ### Contributors
 
