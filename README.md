@@ -1,13 +1,7 @@
 # PlayHack
 
-<br>
-
-# Quick Compo
-
 A hub of ironhack's web dev bootcamp games. A place to share your first project and check for ideas!
-
 <br>
-
 ## Description
 
 Play Hack is a platform that gathers the first project of Web Dev Bootcamp from all Ironhack's campuses. The goal is to create a place where all students can share their games, the ideia behind them, try other cohorts projects but most of all, have fun!
@@ -205,8 +199,6 @@ axios, react-router-dom, styled-components
 [Trello Board](https://trello.com/b/bxzbAEPg/project-3)
 
 ### Git
-
-The url to your repository and to your deployed project
 
 [Client repository Link](https://github.com/miloliveira/playhack-client)
 
